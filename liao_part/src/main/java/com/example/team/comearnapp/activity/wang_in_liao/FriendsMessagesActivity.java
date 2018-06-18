@@ -37,6 +37,7 @@ class FriendsMessagesModel extends BaseModel{
     }
 
     public List<User> fetchAllMessages(){
+
         return null; // TODO:邹神这里获得所有的用户验证信息
     }
 }

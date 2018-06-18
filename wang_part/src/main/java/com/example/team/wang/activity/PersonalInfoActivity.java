@@ -105,28 +105,6 @@ class PersonalInfoModel extends BaseModel {
      * @param text 验证消息
      */
     public void sendOutMessage(String text, Context context) {
-        User user1 = new User();//TODO 汪神这个改成登录用户的User信息类
-        User user2 = new User();//TODO 汪神这个改成好友的User信息类
-        Call<BaseResponse<Object>> addFriendCall = RetroHttpUtil.build().addFriendCall(
-                MapGenerator.generate().add("userUuid", user1.getId())
-                        .add("userAlias", user1.getUsername())
-                        .add("userAatar", user1.getIcon())
-                        .add("friendUuid", user2.getId())
-                        .add("friendAlias", user2.getId())
-                        .add("msg", "null")
-                        .add("remark", "null")
-        );
-        RetroHttpUtil.sendRequest(addFriendCall, new AbstractCommonHttpCallback<BaseResponse<Object>>() {
-            @Override
-            public void onSuccess(BaseResponse<Object> result) {
-                ToastUtil.ToastShortShow("发送验证消息成功", MyApp.getGlobalContext());
-            }
-
-            @Override
-            public void onFail() {
-                ToastUtil.ToastShortShow("发送验证消息失败", MyApp.getGlobalContext());
-            }
-        });
         //TODO 邹神在这里发送验证消息
     }
 

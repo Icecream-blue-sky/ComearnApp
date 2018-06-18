@@ -1,6 +1,7 @@
 package com.example.team.commonlibrary.base.interfaces;
 
 import com.example.team.commonlibrary.base.util.Retrofit.bean.BaseResponse;
+import com.example.team.commonlibrary.base.util.Retrofit.bean.Friend;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.FriendTest;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.Group;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.GroupWhiteListData;
@@ -172,7 +173,7 @@ public interface HttpRequestInterface {
     String ADDFRIEND_URL = "add";
 
     @POST(ADDFRIEND_URL)
-    Call<BaseResponse<Object>> addFriendCall(@Body MapGenerator addFriendData);
+    Call<BaseResponse<Object>> addFriendCall(@Body FriendTest addData);
 
     /**
      * 接受好友请求
