@@ -52,7 +52,7 @@ class PersonalInfoModel extends BaseModel {
 
     User mUser;
 
-    public User getUser(){
+    public User getUser() {
         return mUser;
     }
 
@@ -77,14 +77,15 @@ class PersonalInfoModel extends BaseModel {
     public void signOut() {
 
     }
-    
+
     /**
      * 修改用户名
+     *
      * @param newName 更改后的用户名
      */
-    public void refreshName(String newName,Context context) {
-        Call<BaseResponse<Object>> changeUsernameCall = RetroHttpUtil.build().changeUsernameCall(DbUtil.getString(MyApp.getGlobalContext(),"user_id","null"), MapGenerator.generate().add("username",newName));
-        System.out.println("refreshName:"+DbUtil.getString(MyApp.getGlobalContext(),"user_id","null"));
+    public void refreshName(String newName, Context context) {
+        Call<BaseResponse<Object>> changeUsernameCall = RetroHttpUtil.build().changeUsernameCall(DbUtil.getString(MyApp.getGlobalContext(), "user_id", "null"), MapGenerator.generate().add("username", newName));
+        System.out.println("refreshName:" + DbUtil.getString(MyApp.getGlobalContext(), "user_id", "null"));
         RetroHttpUtil.sendRequest(changeUsernameCall, new AbstractCommonHttpCallback<BaseResponse<Object>>() {
             @Override
             public void onSuccess(BaseResponse<Object> result) {
@@ -100,42 +101,64 @@ class PersonalInfoModel extends BaseModel {
 
     /**
      * 发送好友请求
+     *
      * @param text 验证消息
      */
     public void sendOutMessage(String text, Context context) {
+        User user1 = new User();//TODO 汪神这个改成登录用户的User信息类
+        User user2 = new User();//TODO 汪神这个改成好友的User信息类
+        Call<BaseResponse<Object>> addFriendCall = RetroHttpUtil.build().addFriendCall(
+                MapGenerator.generate().add("userUuid", user1.getId())
+                        .add("userAlias", user1.getUsername())
+                        .add("userAatar", user1.getIcon())
+                        .add("friendUuid", user2.getId())
+                        .add("friendAlias", user2.getId())
+                        .add("msg", "null")
+                        .add("remark", "null")
+        );
+        RetroHttpUtil.sendRequest(addFriendCall, new AbstractCommonHttpCallback<BaseResponse<Object>>() {
+            @Override
+            public void onSuccess(BaseResponse<Object> result) {
+                ToastUtil.ToastShortShow("发送验证消息成功", MyApp.getGlobalContext());
+            }
 
+            @Override
+            public void onFail() {
+                ToastUtil.ToastShortShow("发送验证消息失败", MyApp.getGlobalContext());
+            }
+        });
         //TODO 邹神在这里发送验证消息
     }
 
     /**
      * 上传用户头像
      */
-    public void uploadHeadPortrait(){
+    public void uploadHeadPortrait() {
         //用户的头像
-        String portraitFilePath= " ";
+        String portraitFilePath = " ";
         String userId = " ";
         File portraitFile = new File(portraitFilePath);/**TODO 等待汪神补充**/
-        try{
-            final RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"),portraitFile);
-            Call<BaseResponse<String>> editHeadPortraitCall = RetroHttpUtil.build().editHeadPortraitCall(userId,MapGenerator.generate().add("file",requestBody));
+        try {
+            final RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"), portraitFile);
+            Call<BaseResponse<String>> editHeadPortraitCall = RetroHttpUtil.build().editHeadPortraitCall(userId, MapGenerator.generate().add("file", requestBody));
             RetroHttpUtil.sendRequest(editHeadPortraitCall, new AbstractCommonHttpCallback<BaseResponse<String>>() {
                 @Override
                 public void onSuccess(BaseResponse<String> result) {
-                    ToastUtil.ToastShortShow("修改成功",MyApp.getGlobalContext());
+                    ToastUtil.ToastShortShow("修改成功", MyApp.getGlobalContext());
                     /**
                      * 从服务器获取修改后的头像网址,并保存在本地
                      * TODO:汪神记得从本地数据库调用
                      */
                     String headPortraitUrl = result.getData();
-                    DbUtil.setString(MyApp.getGlobalContext(),"head_portrait_path",headPortraitUrl);
+                    DbUtil.setString(MyApp.getGlobalContext(), "head_portrait_path", headPortraitUrl);
                 }
 
                 @Override
                 public void onFail() {
-                    ToastUtil.ToastShortShow("修改失败",MyApp.getGlobalContext());
+                    ToastUtil.ToastShortShow("修改失败", MyApp.getGlobalContext());
                 }
             });
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -150,22 +173,23 @@ class PersonalInfoPresenter extends BasePresenter<PersonalInfoView> {
     /**
      * 刷新所有的基本信息
      */
-    public void refreshAllInfo(){
+    public void refreshAllInfo() {
         User user = mInfoModel.getUser();
         refreshAllInfo(user);
     }
 
     /**
      * 提供一个依赖外部user的方法
+     *
      * @param user
      */
-    public void refreshAllInfo(User user){
-        if (user != null){
+    public void refreshAllInfo(User user) {
+        if (user != null) {
             mView.refreshInfo(user);
         }
     }
 
-    public User getUser(){
+    public User getUser() {
         return mInfoModel.getUser();
     }
 
@@ -199,6 +223,7 @@ class PersonalInfoPresenter extends BasePresenter<PersonalInfoView> {
     /**
      * 这里的逻辑将移植至Modify活动中
      * 同时将更改为refresh整个User
+     *
      * @param text
      */
     @Deprecated
@@ -209,6 +234,7 @@ class PersonalInfoPresenter extends BasePresenter<PersonalInfoView> {
 
     /**
      * 同时记录下了是不是本用户
+     *
      * @param mTargetUserId
      */
     public void refreshBtn(String mTargetUserId) {
@@ -220,7 +246,7 @@ class PersonalInfoPresenter extends BasePresenter<PersonalInfoView> {
      * 更新头像。
      * TODO:这里需要增加一个选择照片的功能
      */
-    public void updateHeadPortrait(){
+    public void updateHeadPortrait() {
         mView.selectHeadImage();
         mInfoModel.uploadHeadPortrait();
     }
@@ -386,9 +412,8 @@ public class PersonalInfoActivity extends AppCompatActivity implements PersonalI
 
         ((DefaultCustomCardView) mViewManager.getView(R.id.act_personal_info_nsv_dccv_hold))
                 .setHeadText("基本信息").addViewList(views);
-        
-        
-        
+
+
     }
 
     @Override
@@ -416,7 +441,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements PersonalI
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.act_on_class_item_edit){
+        if (item.getItemId() == R.id.act_on_class_item_edit) {
             Intent intent = new Intent(this, ModifyPersonalInfoActivity.class);
             intent.putExtra("user_info_extra", mPresenter.getUser());
             startActivityForResult(intent, FOR_INFO);
@@ -433,14 +458,13 @@ public class PersonalInfoActivity extends AppCompatActivity implements PersonalI
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FOR_CROP && resultCode == RESULT_OK){
-            if (data != null){
+        if (requestCode == FOR_CROP && resultCode == RESULT_OK) {
+            if (data != null) {
                 Uri uri = data.getParcelableExtra(PORTRAIT_IMAGE);
                 updatePortrait(uri);
             }
-        }
-        else if (requestCode == FOR_INFO && resultCode == RESULT_OK){
-            if (data != null){
+        } else if (requestCode == FOR_INFO && resultCode == RESULT_OK) {
+            if (data != null) {
                 //TODO 获得修改后的信息
                 User user = (User) data.getSerializableExtra("user_info");
                 mPresenter.refreshAllInfo(user);
@@ -501,24 +525,22 @@ public class PersonalInfoActivity extends AppCompatActivity implements PersonalI
 
     @Override
     public void updatePortrait(Uri uri) {
-        ((ImageView)mViewManager.getView("clps_bg").findViewById(R.id.act_personal_info_c_bg_ci_portrait)).setImageURI(uri);
+        ((ImageView) mViewManager.getView("clps_bg").findViewById(R.id.act_personal_info_c_bg_ci_portrait)).setImageURI(uri);
     }
 
     @Override
     public void refreshInfo(User user) {
-        ((TextView)mViewManager.getView("clps_bg").findViewById(R.id.act_personal_info_c_tv_info)).setText(user.getEmail());
+        ((TextView) mViewManager.getView("clps_bg").findViewById(R.id.act_personal_info_c_tv_info)).setText(user.getEmail());
 
-        ((CompoundTextLayout)mViewManager.getView("txt_age")).setContentText(user.getGrade());
-        ((CompoundTextLayout)mViewManager.getView("txt_university")).setContentText(user.getInstitute());
-        ((CompoundTextLayout)mViewManager.getView("txt_school")).setContentText(user.getSchool());
-        ((CompoundTextLayout)mViewManager.getView("txt_gender")).setContentText(user.getGender());
-        ((CompoundTextLayout)mViewManager.getView("txt_major")).setContentText(user.getMajor());
+        ((CompoundTextLayout) mViewManager.getView("txt_age")).setContentText(user.getGrade());
+        ((CompoundTextLayout) mViewManager.getView("txt_university")).setContentText(user.getInstitute());
+        ((CompoundTextLayout) mViewManager.getView("txt_school")).setContentText(user.getSchool());
+        ((CompoundTextLayout) mViewManager.getView("txt_gender")).setContentText(user.getGender());
+        ((CompoundTextLayout) mViewManager.getView("txt_major")).setContentText(user.getMajor());
 
 
-
-        ((DefaultCustomCollapsingToolbarLayout)mViewManager.getView("clps_bg")).setTitle(user.getUsername());
-        ((DefaultCustomCollapsingToolbarLayout)mViewManager.getView("clps_bg")).setTitle(user.getUsername());
-
+        ((DefaultCustomCollapsingToolbarLayout) mViewManager.getView("clps_bg")).setTitle(user.getUsername());
+        ((DefaultCustomCollapsingToolbarLayout) mViewManager.getView("clps_bg")).setTitle(user.getUsername());
 
 
     }

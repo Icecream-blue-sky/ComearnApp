@@ -3,6 +3,7 @@ package com.example.team.commonlibrary.base.interfaces;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.BaseResponse;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.FriendTest;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.Group;
+import com.example.team.commonlibrary.base.util.Retrofit.bean.GroupWhiteListData;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.LoginResponseData;
 import com.example.team.commonlibrary.base.util.MapGenerator;
 import com.example.team.commonlibrary.base.util.Retrofit.bean.User;
@@ -104,6 +105,7 @@ public interface HttpRequestInterface {
      * 群组创建的post方法
      */
     String CREATEGROUP_URL = "groups";
+
     @POST(CREATEGROUP_URL)
     Call<BaseResponse<Group>> createGroupCall(@Body UserTest userTest);
 
@@ -134,6 +136,7 @@ public interface HttpRequestInterface {
      * 修改群昵称
      */
     String CHANGEGROUPNAME_URL = "groups/{groupId}/name";
+
     @PUT(CHANGEGROUPNAME_URL)
     Call<BaseResponse<Object>> changeGroupNameCall(@Path("groupId") String groupId, @Body MapGenerator groupName);
 
@@ -141,8 +144,9 @@ public interface HttpRequestInterface {
      * 主动退群
      */
     String QUITGROUP_URL = "groups/users/{id}";
+
     @DELETE(QUITGROUP_URL)
-    Call<BaseResponse<BaseResponse<Object>>> quitGroupCall(@Path("id")String userId,@Body MapGenerator quitData);
+    Call<BaseResponse<BaseResponse<Object>>> quitGroupCall(@Path("id") String userId, @Body MapGenerator quitData);
 
 /************************************************************************************************************************/
 
@@ -166,6 +170,7 @@ public interface HttpRequestInterface {
      * 发送好友请求
      */
     String ADDFRIEND_URL = "add";
+
     @POST(ADDFRIEND_URL)
     Call<BaseResponse<Object>> addFriendCall(@Body MapGenerator addFriendData);
 
@@ -173,6 +178,7 @@ public interface HttpRequestInterface {
      * 接受好友请求
      */
     String ACCEPTFRIEND_URL = "accept";
+
     @POST(ACCEPTFRIEND_URL)
     Call<BaseResponse<Object>> acceptFriendCall(@Body MapGenerator acceptData);
 
@@ -180,6 +186,7 @@ public interface HttpRequestInterface {
      * 拒绝好友请求
      */
     String REJECTFRIEND_URL = "reject";
+
     @POST(REJECTFRIEND_URL)
     Call<BaseResponse<Object>> rejectFriendCall(@Body MapGenerator rejectData);
 
@@ -189,7 +196,6 @@ public interface HttpRequestInterface {
     String GETFRIENDLIST_URL = "users/{id}/friends";
 
     /**
-     *
      * @param userId 用户Id
      */
     @GET(GETFRIENDLIST_URL)
@@ -201,26 +207,47 @@ public interface HttpRequestInterface {
     String EDTUSERINFORMATION_URL = "users/{id}";
 
     /**
-     * @param userId 用户Id
+     * @param userId   用户Id
      * @param userInfo 更新的用户信息
      */
     @PUT(EDTUSERINFORMATION_URL)
-    Call<BaseResponse<Object>> editUserInformationCall(@Path("id")String userId,@Body User userInfo);
+    Call<BaseResponse<Object>> editUserInformationCall(@Path("id") String userId, @Body User userInfo);
 
     /**
      * 修改并上传用户头像,TODO:没上传过图片，可能会出现问题
      */
     String EDITHEADPORTRAIT_URL = "users/{id}/avatar";
+
     @Multipart
     @POST(EDITHEADPORTRAIT_URL)
-    Call<BaseResponse<String>> editHeadPortraitCall(@Path("id")String userId, @PartMap()MapGenerator file);
+    Call<BaseResponse<String>> editHeadPortraitCall(@Path("id") String userId, @PartMap() MapGenerator file);
 
     /**
      * 查询个人信息
      */
-    String GETUSERINFORMATION_URL= "users/{id}";
+    String GETUSERINFORMATION_URL = "users/{id}";
+
     @GET(GETUSERINFORMATION_URL)
-    Call<BaseResponse<User>> getUserInfoCall(@Path("id")String userId);
+    Call<BaseResponse<User>> getUserInfoCall(@Path("id") String userId);
 
 /******************************************************************************************************************/
+
+/**
+ * 白名单界面
+ */
+String GETWHITELIST_URL = "application/{uuid}";
+
+    /**
+     * @param uuid 用户id
+     * @return 返回自习活动具体信息
+     */
+    @GET(GETWHITELIST_URL)
+    Call<BaseResponse<List<GroupWhiteListData>>> getWhiteListCall(@Path("uuid")String uuid);
+
+    /**
+     * 发起自习活动
+     */
+    String LAUNCHGROUPSTUDY_URL = "application";
+    @POST(LAUNCHGROUPSTUDY_URL)
+    Call<BaseResponse<Object>> launchGroupStudy(@Body GroupWhiteListData groupWhiteListData);
 }
