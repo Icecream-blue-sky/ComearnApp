@@ -75,7 +75,9 @@
                     android:id="@+id/type_top_title" />
 
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>
